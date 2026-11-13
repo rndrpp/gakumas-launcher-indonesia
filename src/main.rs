@@ -48,12 +48,12 @@ const LOGIN_SUCCESS_HOST: &str = "webdgp-gameplayer.games.dmm.com";
 /// 로그인 창을 띄워 로그인 완료 주소의 code 를 받아 옴.
 /// 저장된 로그인 상태로 바로 지나가면 창을 보이지 않은 채로 끝남
 fn login_window(app: &AppHandle, url: &str) -> Result<String, String> {
-    let target: tauri::Url = url.parse().map_err(|e| format!("로그인 주소 오류: {e}"))?;
+    let target: tauri::Url = url.parse().map_err(|e| format!("URL login tidak valid: {e}"))?;
     let (tx, rx) = mpsc::channel::<Option<String>>();
     let tx_nav = tx.clone();
     let label = format!("login{}", LOGIN_SEQ.fetch_add(1, Ordering::SeqCst));
     let win = WebviewWindowBuilder::new(app, &label, WebviewUrl::External(target))
-        .title("DMM 로그인")
+        .title("Login DMM")
         .inner_size(480.0, 760.0)
         .center()
         .visible(false)
@@ -70,7 +70,7 @@ fn login_window(app: &AppHandle, url: &str) -> Result<String, String> {
             true
         })
         .build()
-        .map_err(|e| format!("로그인 창을 열지 못했습니다: {e}"))?;
+        .map_err(|e| format!("Gagal membuka jendela login: {e}"))?;
     enable_password_autosave(&win);
     let tx_close = tx.clone();
     win.on_window_event(move |e| {
@@ -83,7 +83,7 @@ fn login_window(app: &AppHandle, url: &str) -> Result<String, String> {
     let code = match rx.recv_timeout(Duration::from_secs(6)) {
         Ok(c) => c,
         Err(mpsc::RecvTimeoutError::Timeout) => {
-            emit_progress(app, "로그인 창에서 로그인하세요", None);
+            emit_progress(app, "Silakan masuk di jendela login", None);
             let _ = win.show();
             let _ = win.set_focus();
             rx.recv_timeout(Duration::from_secs(900)).ok().flatten()
@@ -91,7 +91,7 @@ fn login_window(app: &AppHandle, url: &str) -> Result<String, String> {
         Err(mpsc::RecvTimeoutError::Disconnected) => None,
     };
     let _ = win.close();
-    code.ok_or_else(|| "로그인이 취소되었습니다".to_string())
+    code.ok_or_else(|| "Login dibatalkan".to_string())
 }
 
 /// 로그인 창에서 브라우저 기본 비밀번호 저장/자동 채우기를 켬 (WebView2 기본값은 꺼짐).
@@ -121,7 +121,7 @@ where
         let state = app.state::<AppState>();
         let mut busy = state.busy.lock().unwrap();
         if *busy {
-            return Err("이미 진행 중입니다".into());
+            return Err("Masih ada proses yang berjalan".into());
         }
         *busy = true;
     }
@@ -151,7 +151,7 @@ fn set_mode(state: tauri::State<'_, AppState>, mode: String) -> Result<Status, S
     ]
     .contains(&mode.as_str())
     {
-        return Err("알 수 없는 연결 방식입니다".into());
+        return Err("Mode koneksi tidak dikenal".into());
     }
     let mut s = state.store.settings();
     s.mode = mode;
@@ -193,7 +193,7 @@ async fn pick_game_folder(app: AppHandle, window: tauri::Window) -> Result<Statu
         let mut d = dialog_app
             .dialog()
             .file()
-            .set_title("게임 폴더 선택")
+            .set_title("Pilih folder game")
             .set_parent(&window);
         if let Some(p) = current {
             d = d.set_directory(p);
@@ -209,7 +209,7 @@ async fn pick_game_folder(app: AppHandle, window: tauri::Window) -> Result<Statu
     };
     let path: PathBuf = picked.into_path().map_err(|e| e.to_string())?;
     if !path.join("gakumas.exe").is_file() {
-        return Err("이 폴더에 gakumas.exe 가 없습니다".into());
+        return Err("Tidak ada gakumas.exe di folder ini".into());
     }
     let mut s = state.store.settings();
     let path = path.to_string_lossy().into_owned();
@@ -229,8 +229,8 @@ async fn pick_vpn_file(app: AppHandle, window: tauri::Window) -> Result<Status, 
         dialog_app
             .dialog()
             .file()
-            .set_title("VPN 설정 파일 선택")
-            .add_filter("VPN 설정 파일", &["ovpn", "conf"])
+            .set_title("Pilih file konfigurasi VPN")
+            .add_filter("File konfigurasi VPN", &["ovpn", "conf"])
             .set_parent(&window)
             .blocking_pick_file()
     })
@@ -253,7 +253,7 @@ fn set_vpn_auth(
     password: String,
 ) -> Result<Status, String> {
     if username.trim().is_empty() || password.is_empty() {
-        return Err("아이디와 비밀번호를 모두 입력하세요".into());
+        return Err("Isi ID dan kata sandi".into());
     }
     state.store.save_vpn_auth(username.trim(), &password)?;
     Ok(state.store.status())
@@ -279,7 +279,7 @@ async fn login(app: AppHandle) -> Result<String, String> {
     run_busy(app, |app, store| {
         let progress = |m: &str, p: Option<f32>| emit_progress(app, m, p);
         let get_code = |url: &str| login_window(app, url);
-        launcher::login(store, &get_code, &progress).map(|_| "로그인했습니다".to_string())
+        launcher::login(store, &get_code, &progress).map(|_| "Berhasil masuk".to_string())
     })
     .await
 }
@@ -287,13 +287,13 @@ async fn login(app: AppHandle) -> Result<String, String> {
 #[tauri::command]
 fn logout(app: AppHandle, state: tauri::State<'_, AppState>) -> Result<Status, String> {
     if *state.busy.lock().unwrap() {
-        return Err("진행 중에는 로그아웃할 수 없습니다".into());
+        return Err("Tidak bisa keluar saat ada proses berjalan".into());
     }
     state.store.clear_token()?;
     if let Some(w) = app.get_webview_window("main") {
         // 로그인 창과 같은 저장소를 쓰므로 DMM 로그인 상태와 저장된 비밀번호도 함께 지워짐
         w.clear_all_browsing_data()
-            .map_err(|e| format!("로그인 정보를 지우지 못했습니다: {e}"))?;
+            .map_err(|e| format!("Gagal menghapus data login: {e}"))?;
     }
     Ok(state.store.status())
 }

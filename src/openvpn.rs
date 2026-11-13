@@ -221,7 +221,7 @@ impl OvpnConfig {
                 "auth" => cfg.auth = arg.unwrap_or("SHA1").to_ascii_uppercase(),
                 "auth-user-pass" => {
                     if arg.is_some() {
-                        return Err("auth-user-pass 파일은 가져오기 때 읽어야 합니다".into());
+                        return Err("File auth-user-pass harus dibaca saat impor".into());
                     }
                     cfg.auth_user_pass = true
                 }
@@ -236,13 +236,13 @@ impl OvpnConfig {
                 "fragment" => cfg.fragment = arg.and_then(|n| n.parse().ok()),
                 "key-direction" => key_direction = arg.and_then(|n| n.parse().ok()),
                 "dev" if arg.is_some_and(|a| a.starts_with("tap")) => {
-                    return Err("dev tap 설정은 지원하지 않습니다 (dev tun 만 지원)".into())
+                    return Err("Konfigurasi dev tap tidak didukung (hanya dev tun)".into())
                 }
-                "tls-crypt-v2" => return Err("tls-crypt-v2 는 지원하지 않습니다".into()),
-                "pkcs12" => return Err("pkcs12 인증서는 지원하지 않습니다".into()),
+                "tls-crypt-v2" => return Err("tls-crypt-v2 tidak didukung".into()),
+                "pkcs12" => return Err("Sertifikat pkcs12 tidak didukung".into()),
                 "ca" | "cert" | "key" | "tls-crypt" if arg.is_some_and(|a| a != "[inline]") => {
                     return Err(format!(
-                        "{} 이 다른 파일을 가리킵니다. 인증서가 들어 있는 .ovpn 파일을 쓰세요",
+                        "{} menunjuk ke file lain. Gunakan file .ovpn yang berisi sertifikatnya",
                         d[0]
                     ))
                 }
@@ -251,7 +251,7 @@ impl OvpnConfig {
                         Some("[inline]") | None => tls_auth_inline = true,
                         Some(_) => {
                             return Err(
-                                "tls-auth 가 다른 파일을 가리킵니다. 키가 들어 있는 .ovpn 파일을 쓰세요"
+                                "tls-auth menunjuk ke file lain. Gunakan file .ovpn yang berisi kuncinya"
                                     .into(),
                             )
                         }
@@ -263,19 +263,19 @@ impl OvpnConfig {
                 _ => {}
             }
         }
-        cfg.ca_pem = inline_block(text, "ca").ok_or("<ca> 인증서가 없습니다")?;
+        cfg.ca_pem = inline_block(text, "ca").ok_or("Sertifikat <ca> tidak ada")?;
         cfg.cert_pem = inline_block(text, "cert");
         cfg.key_pem = inline_block(text, "key");
         if let Some(k) = inline_block(text, "tls-auth") {
             cfg.tls_auth = Some((StaticKey::parse(&k)?, key_direction));
         } else if tls_auth_inline {
-            return Err("<tls-auth> 키가 없습니다".into());
+            return Err("Kunci <tls-auth> tidak ada".into());
         }
         if let Some(k) = inline_block(text, "tls-crypt") {
             cfg.tls_crypt = Some(StaticKey::parse(&k)?);
         }
         if text.contains("<tls-crypt-v2>") {
-            return Err("tls-crypt-v2 는 지원하지 않습니다".into());
+            return Err("tls-crypt-v2 tidak didukung".into());
         }
         cfg.remotes = raw_remotes
             .into_iter()
@@ -286,7 +286,7 @@ impl OvpnConfig {
             })
             .collect();
         if cfg.remotes.is_empty() {
-            return Err("remote (서버 주소)가 없습니다".into());
+            return Err("remote (alamat server) tidak ada".into());
         }
         Ok(cfg)
     }
@@ -331,7 +331,7 @@ pub fn inline_external_files(
         match (in_block, parts.first().copied(), file_arg) {
             (false, Some(tag @ ("ca" | "cert" | "key" | "tls-auth" | "tls-crypt")), Some(f)) => {
                 let content = std::fs::read_to_string(dir.join(f))
-                    .map_err(|e| format!("{f} 을(를) 읽지 못했습니다: {e}"))?;
+                    .map_err(|e| format!("Gagal membaca {f}: {e}"))?;
                 out.push_str(&format!("<{tag}>\n{}\n</{tag}>\n", content.trim()));
                 if tag == "tls-auth" {
                     if let Some(kd) = parts.get(2) {
@@ -341,7 +341,7 @@ pub fn inline_external_files(
             }
             (false, Some("auth-user-pass"), Some(f)) => {
                 let content = std::fs::read_to_string(dir.join(f))
-                    .map_err(|e| format!("{f} 을(를) 읽지 못했습니다: {e}"))?;
+                    .map_err(|e| format!("Gagal membaca {f}: {e}"))?;
                 let mut it = content.lines();
                 if let (Some(u), Some(p)) = (it.next(), it.next()) {
                     creds = Some((u.trim().to_string(), p.trim_end().to_string()));
@@ -403,7 +403,7 @@ impl Digest {
             "SHA256" => Ok(Digest::Sha256),
             "SHA384" => Ok(Digest::Sha384),
             "SHA512" => Ok(Digest::Sha512),
-            other => Err(format!("auth {other} 는 지원하지 않습니다")),
+            other => Err(format!("auth {other} tidak didukung")),
         }
     }
     fn algorithm(self) -> rhmac::Algorithm {
@@ -688,7 +688,7 @@ impl Link {
                     }
                     Err(e) if timed_out(&e) => Ok(None),
                     Err(e) if e.kind() == io::ErrorKind::ConnectionReset => {
-                        Err("VPN 서버가 응답하지 않습니다 (UDP 포트 닫힘)".into())
+                        Err("Server VPN tidak merespons (port UDP tertutup)".into())
                     }
                     Err(e) => Err(format!("VPN connection: {e}")),
                 }
@@ -789,7 +789,7 @@ impl Wrap {
                 let (tag, rest) = rest.split_at(h);
                 let (pt, body) = rest.split_at(8);
                 if !ct_eq(&hmac_parts(recv, &[pt, head, body]), tag) {
-                    return Err("tls-auth 확인 실패 (키 또는 key-direction 이 다름)".into());
+                    return Err("Verifikasi tls-auth gagal (kunci atau key-direction berbeda)".into());
                 }
                 Ok([head, body].concat())
             }
@@ -802,7 +802,7 @@ impl Wrap {
                 let mut body = ct.to_vec();
                 Aes256Ctr::new(dec.into(), tag[..16].into()).apply_keystream(&mut body);
                 if !ct_eq(&hmac_parts(recv, &[head, &body]), tag) {
-                    return Err("tls-crypt 확인 실패 (키가 다름)".into());
+                    return Err("Verifikasi tls-crypt gagal (kunci berbeda)".into());
                 }
                 Ok([&head[..9], &body].concat())
             }
@@ -908,7 +908,7 @@ impl DataCipher {
             "AES-128-CBC" => 128,
             "AES-192-CBC" => 192,
             "AES-256-CBC" => 256,
-            other => return Err(format!("데이터 암호 {other} 는 지원하지 않습니다")),
+            other => return Err(format!("Cipher data {other} tidak didukung")),
         };
         let digest = Digest::parse(auth)?;
         Ok(DataCipher::Cbc {
@@ -1092,13 +1092,13 @@ impl Tunnel {
         log: &mut dyn FnMut(String),
     ) -> Result<Tunnel, String> {
         if cfg.auth_user_pass && opts.credentials.is_none() {
-            return Err("VPN 아이디와 비밀번호가 필요합니다".into());
+            return Err("Perlu ID dan kata sandi VPN".into());
         }
         let addr = (opts.remote.host.as_str(), opts.remote.port)
             .to_socket_addrs()
-            .map_err(|e| format!("{} 주소를 찾지 못했습니다: {e}", opts.remote.host))?
+            .map_err(|e| format!("Alamat {} tidak ditemukan: {e}", opts.remote.host))?
             .min_by_key(|a| !a.is_ipv4())
-            .ok_or_else(|| format!("{} 주소를 찾지 못했습니다", opts.remote.host))?;
+            .ok_or_else(|| format!("Alamat {} tidak ditemukan", opts.remote.host))?;
         let link = Link::open(addr, opts.remote.udp)?;
         log(format!(
             "{} connected to {addr}",
@@ -1329,7 +1329,7 @@ impl Tunnel {
         for p in &mut self.unacked {
             if now.duration_since(p.sent) >= RETRANSMIT_AFTER {
                 if p.tries >= 12 {
-                    return Err("VPN 서버가 응답하지 않습니다".into());
+                    return Err("Server VPN tidak merespons".into());
                 }
                 p.sent = now;
                 p.tries += 1;
@@ -1560,7 +1560,7 @@ impl Tunnel {
             }
         }
         let cipher = cipher
-            .ok_or("데이터 암호가 정해지지 않았습니다 (BF-CBC 는 지원하지 않습니다)".to_string())?;
+            .ok_or("Cipher data belum ditentukan (BF-CBC tidak didukung)".to_string())?;
         let km = self.key_material.as_ref().ok_or("no key material")?;
         self.data = Some(DataCipher::new(&cipher, &auth, km)?);
         let ip = ip.ok_or("no ifconfig in PUSH_REPLY")?;

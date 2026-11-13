@@ -13,7 +13,7 @@ use gakumas_launcher::{dpapi, http, netstack::TunnelStack, openvpn::Tunnel, vpng
 
 fn main() {
     if let Err(e) = run() {
-        println!("\n오류: {e}");
+        println!("\nError: {e}");
         std::process::exit(1);
     }
 }
@@ -47,20 +47,20 @@ fn run() -> Result<(), String> {
         .and_then(|t| serde_json::from_str(t.trim_start_matches('\u{feff}')).ok())
         .unwrap_or(serde_json::Value::Null);
     println!(
-        "로그인 토큰: {} / 기기 정보: {}",
+        "Token login: {} / Info perangkat: {}",
         if token.is_some() {
-            "있음 (값은 표시하지 않음)"
+            "ada (nilai tidak ditampilkan)"
         } else {
-            "없음 - DMM API 시험은 건너뜀"
+            "tidak ada - uji DMM API dilewati"
         },
         if device.is_object() {
-            "있음"
+            "ada"
         } else {
-            "없음"
+            "tidak ada"
         }
     );
 
-    println!("\n[1] VPN Gate 서버 목록 받는 중...");
+    println!("\n[1] Mengambil daftar server VPN Gate...");
     let t0 = Instant::now();
     let list = vpngate::fetch_server_list()?;
     let mut candidates: Vec<(vpngate::Server, vpngate::OvpnConfig)> = list
@@ -78,19 +78,19 @@ fn run() -> Result<(), String> {
         candidates.retain(|(s, _)| &s.host_name == name);
     }
     println!(
-        "    일본 TCP 서버 {}개 ({} ms)",
+        "    {} server TCP Jepang ({} ms)",
         candidates.len(),
         t0.elapsed().as_millis()
     );
 
     for (server, cfg) in candidates.iter().take(tries) {
         println!(
-            "\n[2] {} ({}) {}:{} 연결 시도",
+            "\n[2] Mencoba terhubung ke {} ({}) {}:{}",
             server.host_name,
             if server.is_official() {
-                "쓰쿠바대 운영"
+                "dikelola Universitas Tsukuba"
             } else {
-                "자원봉사자 운영"
+                "dikelola relawan"
             },
             vpngate::remote_ip(cfg),
             cfg.remotes[0].port
@@ -100,7 +100,7 @@ fn run() -> Result<(), String> {
         let tun = match Tunnel::connect(cfg, &server.tls_name(), &mut log) {
             Ok(t) => t,
             Err(e) => {
-                println!("    실패: {e}");
+                println!("    gagal: {e}");
                 continue;
             }
         };
@@ -108,29 +108,29 @@ fn run() -> Result<(), String> {
         let t_dns = Instant::now();
         match stack.resolve_in_tunnel(http::DMM_HOST) {
             Ok(ip) => println!(
-                "    DMM 주소 (터널 안 DNS): {ip} ({} ms)",
+                "    Alamat DMM (DNS dalam tunnel): {ip} ({} ms)",
                 t_dns.elapsed().as_millis()
             ),
-            Err(e) => println!("    터널 안 DNS 실패, 시스템 DNS 사용: {e}"),
+            Err(e) => println!("    DNS dalam tunnel gagal, memakai DNS sistem: {e}"),
         }
 
-        println!("\n[3] 터널 안에서 접속 국가 확인 (ipinfo.io, 평문 HTTP)");
+        println!("\n[3] Memeriksa negara koneksi dari dalam tunnel (ipinfo.io, HTTP biasa)");
         let t1 = Instant::now();
         let req = b"GET /country HTTP/1.1\r\nHost: ipinfo.io\r\nUser-Agent: curl/8.0\r\nConnection: close\r\n\r\n";
         match stack.request("ipinfo.io", 80, None, req, Duration::from_secs(20)) {
             Ok(r) => {
                 let (status, body) = http::parse_response(&r)?;
                 println!(
-                    "    HTTP {status}, 국가: {} ({} ms)",
+                    "    HTTP {status}, negara: {} ({} ms)",
                     String::from_utf8_lossy(&body).trim(),
                     t1.elapsed().as_millis()
                 );
             }
-            Err(e) => println!("    실패: {e}"),
+            Err(e) => println!("    gagal: {e}"),
         }
 
         if let Some(tok) = &token {
-            println!("\n[4] DMM API 호출 (터널 안에서 HTTPS, DMM 인증서 검증)");
+            println!("\n[4] Memanggil API DMM (HTTPS dari dalam tunnel, verifikasi sertifikat DMM)");
             let launch_body = serde_json::json!({
                 "product_id": "gakumas", "game_type": "GCL", "game_os": "win", "launch_type": "LIB",
                 "mac_address": device["mac_address"], "hdd_serial": device["hdd_serial"],
@@ -169,18 +169,18 @@ fn run() -> Result<(), String> {
                                 })
                                 .collect();
                             line.push_str(&format!(
-                                " (실행 인자 항목: {}, 최신 버전 {})",
+                                " (item argumen peluncuran: {}, versi terbaru {})",
                                 names.join(", "),
                                 v["data"]["latest_version"].as_str().unwrap_or("?")
                             ));
                         }
                         println!("{line} ({} ms)", t1.elapsed().as_millis());
                     }
-                    Err(e) => println!("    {name}: 실패: {e}"),
+                    Err(e) => println!("    {name}: gagal: {e}"),
                 }
             }
         }
         return Ok(());
     }
-    Err("시도한 서버 모두 연결에 실패했습니다".into())
+    Err("Semua server yang dicoba gagal terhubung".into())
 }

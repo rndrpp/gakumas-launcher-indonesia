@@ -76,9 +76,9 @@ pub fn launch(
         if ShellExecuteExW(&mut info) == 0 {
             let e = GetLastError();
             return Err(if e == 1223 {
-                "관리자 권한 확인 창에서 취소했습니다".to_string()
+                "Dibatalkan di dialog izin administrator".to_string()
             } else {
-                format!("게임을 실행하지 못했습니다 (Windows 오류 {e})")
+                format!("Gagal menjalankan game (error Windows {e})")
             });
         }
         if info.hProcess.is_null() {
@@ -93,7 +93,7 @@ pub fn launch(
                 if code == 0 || is_process_running(name) {
                     Ok(())
                 } else {
-                    Err(format!("게임이 바로 종료되었습니다 (코드 0x{code:08X})"))
+                    Err(format!("Game langsung tertutup (kode 0x{code:08X})"))
                 }
             } else {
                 Ok(())

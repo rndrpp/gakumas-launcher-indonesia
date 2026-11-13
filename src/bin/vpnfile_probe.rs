@@ -15,7 +15,7 @@ use gakumas_launcher::{dpapi, http};
 
 fn main() {
     if let Err(e) = run() {
-        println!("\n오류: {e}");
+        println!("\nError: {e}");
         std::process::exit(1);
     }
 }
@@ -39,15 +39,15 @@ fn run() -> Result<(), String> {
             other => return Err(format!("unknown argument {other}")),
         }
     }
-    let file = file.ok_or("--file 이 필요합니다")?;
-    let text = std::fs::read_to_string(&file).map_err(|e| format!("파일: {e}"))?;
+    let file = file.ok_or("--file diperlukan")?;
+    let text = std::fs::read_to_string(&file).map_err(|e| format!("file: {e}"))?;
     let t0 = Instant::now();
     let mut log = |m: String| println!("    {:>6} ms  {m}", t0.elapsed().as_millis());
 
     let stack = if text.contains("[Interface]") {
         let cfg = WgConfig::parse(&text)?;
         println!(
-            "[1] WireGuard 설정: 주소 {}/{}, 서버 포트 {}, keepalive {:?}, MTU {}",
+            "[1] Konfigurasi WireGuard: alamat {}/{}, port server {}, keepalive {:?}, MTU {}",
             std::net::Ipv4Addr::from(cfg.address),
             cfg.prefix_len,
             cfg.endpoint_port,
@@ -61,7 +61,7 @@ fn run() -> Result<(), String> {
         let (inlined, file_creds) = openvpn::inline_external_files(&text, &dir)?;
         let cfg = OvpnConfig::parse(&inlined)?;
         println!(
-            "[1] OpenVPN 설정: 서버 {}개 (remote-random {}), cipher {:?}, data-ciphers {:?}, auth {}, tls-auth {}, tls-crypt {}, 로그인 {}, 클라이언트 인증서 {}, compress {:?}, fragment {:?}",
+            "[1] Konfigurasi OpenVPN: {} server (remote-random {}), cipher {:?}, data-ciphers {:?}, auth {}, tls-auth {}, tls-crypt {}, login {}, sertifikat klien {}, compress {:?}, fragment {:?}",
             cfg.remotes.len(),
             cfg.remote_random,
             cfg.cipher,
@@ -90,7 +90,7 @@ fn run() -> Result<(), String> {
         let mut found = None;
         for remote in cfg.remote_order().iter().take(tries) {
             println!(
-                "\n[2] {}:{} ({}) 연결 시도",
+                "\n[2] Mencoba terhubung ke {}:{} ({})",
                 remote.host,
                 remote.port,
                 if remote.udp { "UDP" } else { "TCP" }
@@ -107,11 +107,11 @@ fn run() -> Result<(), String> {
                     break;
                 }
                 Err(e) => {
-                    println!("    실패: {e}");
+                    println!("    gagal: {e}");
                     last = e;
                     if dummy && last.contains("AUTH_FAILED") {
                         println!(
-                            "\n가짜 아이디로 AUTH_FAILED 까지 도달: 로그인 직전 단계까지 정상"
+                            "\nSampai AUTH_FAILED dengan ID palsu: tahap sebelum login normal"
                         );
                         return Ok(());
                     }
@@ -130,7 +130,7 @@ fn run() -> Result<(), String> {
             }
             println!(
                 "
-[ping] 보냄 {sent}, 받은 데이터 패킷 {} (복호화 실패 {})",
+[ping] terkirim {sent}, paket data diterima {} (gagal dekripsi {})",
                 tun.data_rx, tun.data_rx_errors
             );
             return Ok(());
@@ -144,13 +144,13 @@ fn probe(mut stack: TunnelStack, data_dir: &std::path::Path) -> Result<(), Strin
     let t = Instant::now();
     match stack.resolve_in_tunnel(http::DMM_HOST) {
         Ok(ip) => println!(
-            "    DMM 주소 (터널 안 DNS): {ip} ({} ms)",
+            "    Alamat DMM (DNS dalam tunnel): {ip} ({} ms)",
             t.elapsed().as_millis()
         ),
-        Err(e) => println!("    터널 안 DNS 실패, 시스템 DNS 사용: {e}"),
+        Err(e) => println!("    DNS dalam tunnel gagal, memakai DNS sistem: {e}"),
     }
 
-    println!("\n[3] 터널 안에서 접속 국가 확인 (ipinfo.io, 평문 HTTP)");
+    println!("\n[3] Memeriksa negara koneksi dari dalam tunnel (ipinfo.io, HTTP biasa)");
     let t1 = Instant::now();
     let req = b"GET /country HTTP/1.1\r\nHost: ipinfo.io\r\nUser-Agent: curl/8.0\r\nConnection: close\r\n\r\n";
     match stack.request("ipinfo.io", 80, None, req, Duration::from_secs(20)) {
@@ -158,12 +158,12 @@ fn probe(mut stack: TunnelStack, data_dir: &std::path::Path) -> Result<(), Strin
             let (status, body) = http::parse_response(&r)?;
             let body = String::from_utf8_lossy(&body);
             println!(
-                "    HTTP {status}, 국가: {} ({} ms)",
+                "    HTTP {status}, negara: {} ({} ms)",
                 if status == 200 { body.trim() } else { "?" },
                 t1.elapsed().as_millis()
             );
         }
-        Err(e) => println!("    실패: {e}"),
+        Err(e) => println!("    gagal: {e}"),
     }
 
     let token = std::fs::read_to_string(data_dir.join("dmm_login.dat"))
@@ -174,10 +174,10 @@ fn probe(mut stack: TunnelStack, data_dir: &std::path::Path) -> Result<(), Strin
         .and_then(|t| serde_json::from_str(t.trim_start_matches('\u{feff}')).ok())
         .unwrap_or(serde_json::Value::Null);
     let Some(tok) = token else {
-        println!("\n(로그인 토큰이 없어 DMM API 시험은 건너뜀)");
+        println!("\n(tidak ada token login, uji DMM API dilewati)");
         return Ok(());
     };
-    println!("\n[4] DMM API 호출 (터널 안에서 HTTPS)");
+    println!("\n[4] Memanggil API DMM (HTTPS dari dalam tunnel)");
     let launch_body = serde_json::json!({
         "product_id": "gakumas", "game_type": "GCL", "game_os": "win", "launch_type": "LIB",
         "mac_address": device["mac_address"], "hdd_serial": device["hdd_serial"],
@@ -207,7 +207,7 @@ fn probe(mut stack: TunnelStack, data_dir: &std::path::Path) -> Result<(), Strin
                     t1.elapsed().as_millis()
                 );
             }
-            Err(e) => println!("    {name}: 실패: {e}"),
+            Err(e) => println!("    {name}: gagal: {e}"),
         }
     }
     Ok(())

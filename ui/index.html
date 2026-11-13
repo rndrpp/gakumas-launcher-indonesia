@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ko">
+<html lang="id">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>학원 아이돌마스터</title>
+<title>Gakuen Idolmaster</title>
 <style>
   /* 글꼴: 나눔스퀘어 라운드 (NAVER, SIL OFL 1.1 - fonts/FONT-LICENSE.txt) */
   @font-face { font-family: "NanumSquareRound"; src: url("fonts/NanumSquareRoundR.woff2") format("woff2"); font-weight: 400; }
@@ -32,7 +32,7 @@
   html, body { height: 100%; }
   body {
     margin: 0; overflow-y: auto; color: var(--text); user-select: none; cursor: default;
-    font-family: "NanumSquareRound", "Malgun Gothic", sans-serif; font-weight: 700;
+    font-family: "NanumSquareRound", "Segoe UI", sans-serif; font-weight: 700;
     background-color: var(--page);
     /* 연한 원·마름모 무늬 */
     background-image:
@@ -99,7 +99,7 @@
   .tile {
     display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; border: 0;
     border-radius: 0 16px 0 0; background: var(--tile); cursor: pointer;
-    font: 800 17px "NanumSquareRound", "Malgun Gothic", sans-serif; color: var(--text);
+    font: 800 17px "NanumSquareRound", "Segoe UI", sans-serif; color: var(--text);
     transition: background-color 0.15s;
   }
   .tile[aria-checked="true"] { background: var(--tile-on); }
@@ -126,7 +126,7 @@
   .field {
     display: block; width: 100%; height: 50px; padding: 0 16px; border: 0; outline: none;
     border-radius: 0 14px 0 0; background: var(--tile);
-    font: 800 16px "NanumSquareRound", "Malgun Gothic", sans-serif; color: var(--text);
+    font: 800 16px "NanumSquareRound", "Segoe UI", sans-serif; color: var(--text);
   }
   .field::placeholder { color: #aaa4a0; }
   .field:focus { box-shadow: inset 0 0 0 2px var(--head-b, #ff9a3c); }
@@ -143,7 +143,7 @@
   .item-sub { margin-top: 6px; font-size: 14px; font-weight: 700; color: var(--text-sub); word-break: break-all; }
   /* 한글 글꼴은 \ 를 ₩ 로 그리므로 경로는 영문 글꼴 먼저 */
   .item-sub.path {
-    font-family: "Segoe UI", "NanumSquareRound", "Malgun Gothic", sans-serif; font-weight: 600;
+    font-family: "Segoe UI", "NanumSquareRound", "Segoe UI", sans-serif; font-weight: 600;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal;
   }
   .item-main { flex: 1; }
@@ -178,7 +178,7 @@
     height: 36px; padding: 0 16px; border-radius: 999px; cursor: pointer; white-space: nowrap;
     border: 0; background: linear-gradient(#ffffff, #f4f3f1);
     box-shadow: 0 2px 6px rgba(70, 50, 40, 0.16);
-    font: 800 14px "NanumSquareRound", "Malgun Gothic", sans-serif; color: #555050;
+    font: 800 14px "NanumSquareRound", "Segoe UI", sans-serif; color: #555050;
   }
   .pill:active { transform: translateY(1px); box-shadow: 0 1px 3px rgba(70, 50, 40, 0.16); }
   .pill.danger { color: var(--red); }
@@ -188,7 +188,7 @@
   .btn {
     position: relative; display: flex; align-items: center; justify-content: center; height: 62px; padding: 0 30px 0 52px;
     border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap;
-    font: 800 20px "NanumSquareRound", "Malgun Gothic", sans-serif; letter-spacing: 0.06em;
+    font: 800 20px "NanumSquareRound", "Segoe UI", sans-serif; letter-spacing: 0.06em;
     transition: transform 0.12s, filter 0.2s;
   }
   .btn .icon { position: absolute; left: 24px; top: 50%; width: 26px; height: 26px; transform: translateY(-50%); }
@@ -242,7 +242,7 @@
   .modal-text { font-size: 17px; line-height: 1.6; color: #555050; white-space: pre-line; text-align: center; padding: 6px 0 4px; }
   .modal-log {
     margin: 0; height: 300px; overflow-y: auto; padding: 12px 14px; border-radius: 0 14px 0 0; background: var(--tile);
-    font: 700 12.5px/1.6 "NanumSquareRound", "Malgun Gothic", sans-serif; color: #6c6666; white-space: pre-wrap; user-select: text;
+    font: 700 12.5px/1.6 "NanumSquareRound", "Segoe UI", sans-serif; color: #6c6666; white-space: pre-wrap; user-select: text;
   }
   .modal-buttons { position: relative; display: flex; gap: 16px; margin-top: -31px; padding: 0 12px; }
   .modal-buttons .btn { flex: 1 1 0; min-width: 0; padding: 0 20px 0 48px; }
@@ -254,49 +254,49 @@
   <div class="header" data-tauri-drag-region>
     <div class="title-pill" data-tauri-drag-region>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.2v7.6l6-3.8z" fill="currentColor"/></svg>
-      런처
+      Launcher
     </div>
     <div class="win-buttons">
-      <button class="minimize" id="winMin" aria-label="최소화"><svg viewBox="0 0 14 14"><path d="M2.5 7h9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
-      <button class="close" id="winClose" aria-label="닫기"><svg viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+      <button class="minimize" id="winMin" aria-label="Perkecil"><svg viewBox="0 0 14 14"><path d="M2.5 7h9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+      <button class="close" id="winClose" aria-label="Tutup"><svg viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
     </div>
   </div>
 
   <section class="panel">
-    <div class="panel-head"><svg class="star-l" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12C7 11 11 7 12 0z"/></svg><span>일본 연결</span><svg class="star-r" viewBox="0 0 32 32"><path fill="#ffb92e" d="M13 2c.8 6.2 3.8 9.2 10 10-6.2.8-9.2 3.8-10 10-.8-6.2-3.8-9.2-10-10 6.2-.8 9.2-3.8 10-10z"/><path fill="#ffffff" opacity=".9" d="M25 18c.4 3.2 1.8 4.6 5 5-3.2.4-4.6 1.8-5 5-.4-3.2-1.8-4.6-5-5 3.2-.4 4.6-1.8 5-5z"/></svg></div>
+    <div class="panel-head"><svg class="star-l" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12C7 11 11 7 12 0z"/></svg><span>Koneksi Jepang</span><svg class="star-r" viewBox="0 0 32 32"><path fill="#ffb92e" d="M13 2c.8 6.2 3.8 9.2 10 10-6.2.8-9.2 3.8-10 10-.8-6.2-3.8-9.2-10-10 6.2-.8 9.2-3.8 10-10z"/><path fill="#ffffff" opacity=".9" d="M25 18c.4 3.2 1.8 4.6 5 5-3.2.4-4.6 1.8-5 5-.4-3.2-1.8-4.6-5-5 3.2-.4 4.6-1.8 5-5z"/></svg></div>
     <div class="panel-body">
-      <div class="tiles three" id="mode" role="radiogroup" aria-label="일본 연결">
+      <div class="tiles three" id="mode" role="radiogroup" aria-label="Koneksi Jepang">
         <button class="tile" role="radio" aria-checked="false" data-mode="vpngate"><span class="radio"></span>VPN Gate</button>
-        <button class="tile" role="radio" aria-checked="false" data-mode="file"><span class="radio"></span>VPN 파일</button>
-        <button class="tile" role="radio" aria-checked="false" data-mode="direct"><span class="radio"></span>일반 연결</button>
+        <button class="tile" role="radio" aria-checked="false" data-mode="file"><span class="radio"></span>File VPN</button>
+        <button class="tile" role="radio" aria-checked="false" data-mode="direct"><span class="radio"></span>Tanpa VPN</button>
       </div>
       <div class="item vpn-file" id="vpnRow" hidden>
-        <div class="item-main"><div class="item-title">VPN 파일</div><div class="item-sub path" id="vpnName">-</div></div>
-        <div class="item-actions"><button class="pill" id="vpnAuth" hidden>계정</button><button class="pill" id="vpnPick">파일 선택</button></div>
+        <div class="item-main"><div class="item-title">File VPN</div><div class="item-sub path" id="vpnName">-</div></div>
+        <div class="item-actions"><button class="pill" id="vpnAuth" hidden>Akun</button><button class="pill" id="vpnPick">Pilih file</button></div>
       </div>
-      <p class="mode-warn" id="directWarn" hidden>런처가 VPN 없이 PC 인터넷을 그대로 씁니다.
-일본 밖이라면 VPN 앱으로 일본에 먼저 연결하세요.</p>
+      <p class="mode-warn" id="directWarn" hidden>Launcher memakai internet PC apa adanya, tanpa VPN.
+Jika Anda di luar Jepang, sambungkan dulu ke VPN Jepang.</p>
     </div>
   </section>
 
   <section class="panel">
-    <div class="panel-head"><svg class="star-l" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12C7 11 11 7 12 0z"/></svg><span>설정</span><svg class="star-r" viewBox="0 0 32 32"><path fill="#ffb92e" d="M13 2c.8 6.2 3.8 9.2 10 10-6.2.8-9.2 3.8-10 10-.8-6.2-3.8-9.2-10-10 6.2-.8 9.2-3.8 10-10z"/><path fill="#ffffff" opacity=".9" d="M25 18c.4 3.2 1.8 4.6 5 5-3.2.4-4.6 1.8-5 5-.4-3.2-1.8-4.6-5-5 3.2-.4 4.6-1.8 5-5z"/></svg></div>
+    <div class="panel-head"><svg class="star-l" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12C7 11 11 7 12 0z"/></svg><span>Pengaturan</span><svg class="star-r" viewBox="0 0 32 32"><path fill="#ffb92e" d="M13 2c.8 6.2 3.8 9.2 10 10-6.2.8-9.2 3.8-10 10-.8-6.2-3.8-9.2-10-10 6.2-.8 9.2-3.8 10-10z"/><path fill="#ffffff" opacity=".9" d="M25 18c.4 3.2 1.8 4.6 5 5-3.2.4-4.6 1.8-5 5-.4-3.2-1.8-4.6-5-5 3.2-.4 4.6-1.8 5-5z"/></svg></div>
     <div class="panel-body">
       <div class="item">
-        <div class="item-main"><div class="item-title" id="autoLabel">실행 시 자동 시작</div></div>
+        <div class="item-main"><div class="item-title" id="autoLabel">Mulai otomatis saat dibuka</div></div>
         <button class="toggle" id="auto" role="switch" aria-checked="false" aria-labelledby="autoLabel"><span class="word on">ON</span><span class="word off">OFF</span><span class="knob"></span></button>
       </div>
       <div class="item">
-        <div class="item-main"><div class="item-title" id="closeLabel">게임 실행 후 런처 종료</div></div>
+        <div class="item-main"><div class="item-title" id="closeLabel">Tutup launcher setelah game jalan</div></div>
         <button class="toggle" id="closeAfter" role="switch" aria-checked="false" aria-labelledby="closeLabel"><span class="word on">ON</span><span class="word off">OFF</span><span class="knob"></span></button>
       </div>
       <div class="item">
-        <div class="item-main"><div class="item-title">게임 폴더</div><div class="item-sub path" id="path">-</div></div>
-        <div class="item-actions"><button class="pill" id="folder">변경</button></div>
+        <div class="item-main"><div class="item-title">Folder game</div><div class="item-sub path" id="path">-</div></div>
+        <div class="item-actions"><button class="pill" id="folder">Ubah</button></div>
       </div>
       <div class="item">
-        <div class="item-main"><div class="item-title">DMM 계정</div><div class="item-sub account"><span class="dot" id="accountDot"></span><span id="accountText">-</span></div></div>
-        <div class="item-actions"><button class="pill" id="accountBtn">로그인</button></div>
+        <div class="item-main"><div class="item-title">Akun DMM</div><div class="item-sub account"><span class="dot" id="accountDot"></span><span id="accountText">-</span></div></div>
+        <div class="item-actions"><button class="pill" id="accountBtn">Masuk</button></div>
       </div>
     </div>
   </section>
@@ -306,8 +306,8 @@
   <div class="meter" id="meter"><div id="bar"></div></div>
   <div class="status" id="status"></div>
   <div class="bottom-row">
-    <button class="round" id="logBtn" aria-label="기록"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.2" cy="7" r="1.1" fill="currentColor" stroke="none"/><circle cx="4.2" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="4.2" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg></button>
-    <button class="btn primary" id="start"><span class="icon" id="startIcon"></span><span id="startLabel">게임 시작</span></button>
+    <button class="round" id="logBtn" aria-label="Log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.2" cy="7" r="1.1" fill="currentColor" stroke="none"/><circle cx="4.2" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="4.2" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg></button>
+    <button class="btn primary" id="start"><span class="icon" id="startIcon"></span><span id="startLabel">Mulai Game</span></button>
   </div>
 </div>
 
@@ -354,7 +354,7 @@
   const logLines = [];
 
   function log(msg) {
-    const t = new Date().toLocaleTimeString('ko-KR', { hour12: false });
+    const t = new Date().toLocaleTimeString('id-ID', { hour12: false });
     logLines.push(`${t}  ${msg}`);
     const pre = document.querySelector('.modal-log');
     if (pre) { pre.textContent = logLines.join('\n'); pre.scrollTop = pre.scrollHeight; }
@@ -374,7 +374,7 @@
   function updateStart() {
     const b = $('start');
     $('startIcon').innerHTML = busy ? '<span class="spinner"></span>' : ICON.play;
-    $('startLabel').textContent = busy ? '실행 중' : '게임 시작';
+    $('startLabel').textContent = busy ? 'Menjalankan' : 'Mulai Game';
     b.disabled = busy || !gameFound || !vpnReady;
   }
   function setBusy(b) {
@@ -388,11 +388,11 @@
   let loggedIn = false;
   function render(s) {
     loggedIn = s.logged_in;
-    $('accountText').textContent = loggedIn ? '로그인됨' : '로그인 필요';
+    $('accountText').textContent = loggedIn ? 'Sudah masuk' : 'Belum masuk';
     $('accountDot').classList.toggle('on', loggedIn);
-    $('accountBtn').textContent = loggedIn ? '로그아웃' : '로그인';
+    $('accountBtn').textContent = loggedIn ? 'Keluar' : 'Masuk';
     $('accountBtn').classList.toggle('danger', loggedIn);
-    $('path').textContent = s.game_path || '선택 안 됨';
+    $('path').textContent = s.game_path || 'Belum dipilih';
     $('path').title = s.game_path || '';
     $('mode').querySelectorAll('button').forEach((x) => x.setAttribute('aria-checked', String(x.dataset.mode === s.mode)));
     $('auto').setAttribute('aria-checked', String(s.auto_start));
@@ -401,15 +401,15 @@
     const fileMode = s.mode === 'file';
     $('vpnRow').hidden = !fileMode;
     $('directWarn').hidden = s.mode !== 'direct';
-    $('vpnName').textContent = s.vpn_file || '선택 안 됨';
+    $('vpnName').textContent = s.vpn_file || 'Belum dipilih';
     $('vpnName').title = s.vpn_file || '';
     $('vpnAuth').hidden = !s.vpn_needs_auth;
     vpnReady = !fileMode || !!s.vpn_file;
     gameFound = s.game_found;
     updateStart();
-    if (!gameFound && !busy) setStatus('게임 폴더를 선택하세요', true);
-    else if (!vpnReady && !busy) setStatus('VPN 파일을 선택하세요', true);
-    else if ($('status').textContent === 'VPN 파일을 선택하세요') setStatus('');
+    if (!gameFound && !busy) setStatus('Pilih folder game', true);
+    else if (!vpnReady && !busy) setStatus('Pilih file VPN', true);
+    else if ($('status').textContent === 'Pilih file VPN') setStatus('');
   }
   let vpnState = {};
 
@@ -421,13 +421,13 @@
     note.textContent = vpnState.vpn_file || '';
     const user = document.createElement('input');
     user.className = 'field';
-    user.placeholder = '아이디';
+    user.placeholder = 'ID';
     user.autocomplete = 'off';
     user.spellcheck = false;
     const pass = document.createElement('input');
     pass.className = 'field';
     pass.type = 'password';
-    pass.placeholder = '비밀번호';
+    pass.placeholder = 'Kata sandi';
     pass.autocomplete = 'off';
     body.append(note, user, pass);
     for (const el of [user, pass]) {
@@ -436,18 +436,18 @@
       });
     }
     const shown = openModal({
-      title: 'VPN 계정',
+      title: 'Akun VPN',
       body,
       buttons: [
-        { label: '취소', kind: 'secondary', icon: 'cross', value: false },
-        { label: '결정', kind: 'primary', icon: 'check', value: true },
+        { label: 'Batal', kind: 'secondary', icon: 'cross', value: false },
+        { label: 'OK', kind: 'primary', icon: 'check', value: true },
       ],
     });
     setTimeout(() => user.focus(), 50);
     if (!(await shown)) return false;
     try {
       render(await invoke('set_vpn_auth', { username: user.value, password: pass.value }));
-      setStatus('VPN 계정을 저장했습니다');
+      setStatus('Akun VPN disimpan');
       return true;
     } catch (e) {
       setStatus(String(e), true);
@@ -490,7 +490,7 @@
     const { message, percent } = e.payload;
     setStatus(message);
     setMeter(percent);
-    if (!/^(파일 검사 중|업데이트 중)/.test(message)) log(message);
+    if (!/^(Memeriksa file|Memperbarui)/.test(message)) log(message);
   });
 
   async function run(cmd) {
@@ -502,7 +502,7 @@
       log(r);
     } catch (e) {
       setStatus(String(e), true);
-      log('오류: ' + e);
+      log('Error: ' + e);
     } finally {
       setBusy(false);
       refresh();
@@ -529,40 +529,40 @@
   $('accountBtn').onclick = async () => {
     if (!loggedIn) return run('login');
     const ok = await openModal({
-      title: '로그아웃',
-      body: textBody('로그아웃할까요?\n저장된 로그인 정보가 삭제됩니다.'),
+      title: 'Keluar',
+      body: textBody('Keluar dari akun?\nData login yang tersimpan akan dihapus.'),
       buttons: [
-        { label: '취소', kind: 'secondary', icon: 'cross', value: false },
-        { label: '결정', kind: 'primary', icon: 'check', value: true },
+        { label: 'Batal', kind: 'secondary', icon: 'cross', value: false },
+        { label: 'OK', kind: 'primary', icon: 'check', value: true },
       ],
     });
     if (!ok) return;
     try {
       render(await invoke('logout'));
-      setStatus('로그아웃했습니다');
-      log('로그아웃했습니다');
+      setStatus('Berhasil keluar');
+      log('Berhasil keluar');
     } catch (e) {
       setStatus(String(e), true);
-      log('오류: ' + e);
+      log('Error: ' + e);
       refresh();
     }
   };
   $('logBtn').onclick = async () => {
     const pre = document.createElement('pre');
     pre.className = 'modal-log';
-    pre.textContent = logLines.length ? logLines.join('\n') : '기록이 없습니다';
+    pre.textContent = logLines.length ? logLines.join('\n') : 'Belum ada log';
     const shown = openModal({
-      title: '기록',
+      title: 'Log',
       body: pre,
       buttons: [
-        { label: '닫기', kind: 'secondary', icon: 'cross', value: null },
-        { label: '복사', kind: 'primary', icon: 'copy', value: 'copy' },
+        { label: 'Tutup', kind: 'secondary', icon: 'cross', value: null },
+        { label: 'Salin', kind: 'primary', icon: 'copy', value: 'copy' },
       ],
     });
     requestAnimationFrame(() => (pre.scrollTop = pre.scrollHeight));
     if ((await shown) !== 'copy') return;
-    if (!logLines.length) return setStatus('복사할 기록이 없습니다');
-    setStatus((await copyText(logLines.join('\n'))) ? '기록을 복사했습니다' : '복사하지 못했습니다', false);
+    if (!logLines.length) return setStatus('Tidak ada log untuk disalin');
+    setStatus((await copyText(logLines.join('\n'))) ? 'Log disalin' : 'Gagal menyalin', false);
   };
   $('folder').onclick = async () => {
     try { render(await invoke('pick_game_folder')); if (gameFound) setStatus(''); } catch (e) { setStatus(String(e), true); }
@@ -585,11 +585,11 @@
   $('winClose').onclick = () => appWindow.close();
   listen('close-blocked', async () => {
     const ok = await openModal({
-      title: '종료',
-      body: textBody('진행 중인 작업이 있습니다.\n지금 닫을까요?'),
+      title: 'Tutup',
+      body: textBody('Masih ada proses yang berjalan.\nTutup sekarang?'),
       buttons: [
-        { label: '취소', kind: 'secondary', icon: 'cross', value: false },
-        { label: '닫기', kind: 'primary', icon: 'check', value: true },
+        { label: 'Batal', kind: 'secondary', icon: 'cross', value: false },
+        { label: 'Tutup', kind: 'primary', icon: 'check', value: true },
       ],
     });
     if (ok) invoke('force_close');
